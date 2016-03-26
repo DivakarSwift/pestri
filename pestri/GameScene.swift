@@ -1,11 +1,3 @@
-//
-//  GameScene.swift
-//  agar-clone
-//
-//  Created by Ming on 8/24/15.
-//  Copyright (c) 2015 __MyCompanyName__. All rights reserved.
-//
-
 import SpriteKit
 import CoreMotion
 import MultipeerConnectivity
@@ -22,7 +14,7 @@ class GameScene: SKScene {
     
     var world : SKNode!
     var foodLayer : SKNode!
-    var barrierLayer : SKNode!
+    var virusLayer : SKNode!
     var playerLayer : SKNode!
     var hudLayer : Hud!
     var background : SKSpriteNode!
@@ -37,6 +29,9 @@ class GameScene: SKScene {
     var touchingLocation : UITouch? = nil
     var motionManager : CMMotionManager!
     var motionDetectionIsEnabled = false
+    
+    var previousChildrenCount = 0
+    var previousTotalMass: CGFloat = 0.0
     
     // Menus
     var pauseMenu : PauseView!
@@ -60,7 +55,7 @@ class GameScene: SKScene {
         
         world = self.childNodeWithName("world")!
         foodLayer = world.childNodeWithName("foodLayer")
-        barrierLayer = world.childNodeWithName("barrierLayer")
+        virusLayer = world.childNodeWithName("virusLayer")
         playerLayer = world.childNodeWithName("playerLayer")
         background = world.childNodeWithName("//background") as! SKSpriteNode
         defaultBackgroundColor = background.color
@@ -86,7 +81,7 @@ class GameScene: SKScene {
     
     func cleanAll() {
         foodLayer.removeAllChildren()
-        barrierLayer.removeAllChildren()
+        virusLayer.removeAllChildren()
         playerLayer.removeAllChildren()
         
         self.removeAllActions()
@@ -108,12 +103,12 @@ class GameScene: SKScene {
         if gameMode == GameMode.SP || gameMode == GameMode.MPMaster {
             // Create Foods
             self.spawnFood(100)
-            // Create Barriers
-            self.spawnBarrier(15)
+            // Create Virus
+            self.spawnVirus(15)
             
-            scheduleRunRepeat(self, time: Double(GlobalConstants.BarrierRespawnInterval)) { () -> Void in
-                if self.barrierLayer.children.count < GlobalConstants.BarrierLimit {
-                    self.spawnBarrier()
+            scheduleRunRepeat(self, time: Double(GlobalConstants.VirusRespawnInterval)) { () -> Void in
+                if self.virusLayer.children.count < GlobalConstants.VirusLimit {
+                    self.spawnVirus()
                 }
             }
             
@@ -172,11 +167,6 @@ class GameScene: SKScene {
     }
     
     func gameOver() {
-        if gameMode == GameMode.SP {
-            // Pause only in SP mode
-            //self.paused = true
-        }
-        
         self.gameOverMenu.hidden = false
     }
     
@@ -200,9 +190,9 @@ class GameScene: SKScene {
         }
     }
     
-    func spawnBarrier(n : Int = 1) {
+    func spawnVirus(n : Int = 1) {
         for _ in 0..<n {
-            barrierLayer.addChild(Barrier())
+            virusLayer.addChild(Virus())
         }
     }
     
@@ -231,28 +221,36 @@ class GameScene: SKScene {
             world.setScale(1.0)
             return
         }
-        let scaleFactorBallNumber = 1.0 + (log(CGFloat(player.children.count)) - 1) * 0.2
-        let t = log10(CGFloat(player.totalMass())) - 1
-        let scaleFactorBallMass = 1.0 + t * t * 1.0
-        world.setScale(1 / scaleFactorBallNumber / scaleFactorBallMass)
+
+        if player.children.count != self.previousChildrenCount || player.totalMass() != self.previousTotalMass {
+            self.previousChildrenCount = player.children.count
+            self.previousTotalMass = player.totalMass()
+            let scaleFactorBallNumber = 1.0 + (log(CGFloat(player.children.count)) - 1) * 0.2
+            let t = log10(CGFloat(player.totalMass())) - 1
+            let scaleFactorBallMass = 1.0 + t * t * 1.0
+            world.setScale(1 / scaleFactorBallNumber / scaleFactorBallMass)
+        }
     }
     
     func motionDetection() -> CGVector? {
-        if let motion = motionManager.deviceMotion {
-            //motion.attitude.yaw
-            let m = motion.attitude.rotationMatrix
-            let x = Vector3D(x: m.m11, y: m.m12, z: m.m13)
-            let y = Vector3D(x: m.m21, y: m.m22, z: m.m23)
-            let z = Vector3D(x: m.m31, y: m.m32, z: m.m33)
+        if motionDetectionIsEnabled {
+            if let motion = motionManager.deviceMotion {
+                //motion.attitude.yaw
+                let m = motion.attitude.rotationMatrix
+                let x = Vector3D(x: m.m11, y: m.m12, z: m.m13)
+                let y = Vector3D(x: m.m21, y: m.m22, z: m.m23)
+                let z = Vector3D(x: m.m31, y: m.m32, z: m.m33)
             
-            let g = Vector3D(x: 0.0, y: 0.0, z: -1.0)
-            let pl = dot(z, rhs: g)
-            var d = g - z * pl
-            d = d / d.length()
+                let g = Vector3D(x: 0.0, y: 0.0, z: -1.0)
+                let pl = dot(z, rhs: g)
+                var d = g - z * pl
+                d = d / d.length()
             
-            let nd = CGVector(dx: dot(d, rhs: y), dy: -1.0 * dot(d, rhs: x))
-            let maxv : CGFloat = 10000.0
-            return nd * maxv
+                let nd = CGVector(dx: dot(d, rhs: y), dy: -1.0 * dot(d, rhs: x))
+                let maxv : CGFloat = 10000.0
+                return nd * maxv
+            }
+            return nil
         }
         return nil
     }
@@ -282,17 +280,21 @@ class GameScene: SKScene {
         
         if gameMode == GameMode.MPClient {
             clientDelegate.updateScene()
-        }
-        
-        if gameMode != GameMode.MPClient {
-            // Respawn food and barrier
-            let fl = gameMode == GameMode.SP ? GlobalConstants.FoodLimit : 250
-            let foodRespawnNumber = min(fl - foodLayer.children.count, GlobalConstants.FoodRespawnRate)
+        } else {
+            // Respawn food and virus
+            let foodRespawnNumber = min(GlobalConstants.FoodLimit - foodLayer.children.count, GlobalConstants.FoodRespawnRate)
             spawnFood(foodRespawnNumber)
         }
         
         if currentPlayer != nil {
-            if let t = touchingLocation {
+            if let v = motionDetection() {
+                let c = currentPlayer!.centerPosition()
+                let p = CGPoint(x: c.x + v.dx, y: c.y + v.dy)
+                if gameMode == GameMode.MPClient {
+                    clientDelegate.requestMove(p)
+                }
+                currentPlayer!.move(p)
+            } else if let t = touchingLocation {
                 let p = t.locationInNode(world)
                 if gameMode == GameMode.MPClient {
                     clientDelegate.requestMove(p)
@@ -305,15 +307,7 @@ class GameScene: SKScene {
                 currentPlayer!.floating()
             }
             
-            let v = motionDetection()
-            if motionDetectionIsEnabled && v != nil {
-                let c = currentPlayer!.centerPosition()
-                let p = CGPoint(x: c.x + v!.dx, y: c.y + v!.dy)
-                if gameMode == GameMode.MPClient {
-                    clientDelegate.requestMove(p)
-                }
-                currentPlayer!.move(p)
-            }
+            
         } else {
             // Send request to server
         }
@@ -363,15 +357,7 @@ class GameScene: SKScene {
             }
         }
         
-        if let t = touchingLocation {
-            let screenLocation = t.locationInNode(self)
-            if screenLocation.x > frame.width * 0.7 {
-                hudLayer.moveSplitButtonToLeft()
-            }
-            if screenLocation.x < frame.width * 0.3 {
-                hudLayer.moveSplitButtonToRight()
-            }
-        }
+        self.updateSplitButtonPosition()
     }
     
     override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
@@ -387,6 +373,10 @@ class GameScene: SKScene {
             }
         }
         
+        self.updateSplitButtonPosition()
+    }
+    
+    func updateSplitButtonPosition() {
         if let t = touchingLocation {
             let screenLocation = t.locationInNode(self)
             if screenLocation.x > frame.width * 0.7 {
@@ -421,27 +411,25 @@ extension GameScene : SKPhysicsContactDelegate {
             sndBody = contact.bodyA
         }
         
-        // Purpose of using "if let" is to test if the object exist
-        if let fstNode = fstBody.node {
-            if let sndNode = sndBody.node {
-                if fstNode.name!.hasPrefix("ball") && sndNode.name!.hasPrefix("barrier") {
-                    let nodeA = fstNode as! Ball
-                    let nodeB = sndNode as! Barrier
-                    if nodeA.radius >= nodeB.radius {
-                        if let p = nodeA.parent {
-                            nodeA.split(min(4, 16 - p.children.count + 1))
-                            sndNode.removeFromParent()
+        if fstBody.categoryBitMask == GlobalConstants.Category.ball && sndBody.categoryBitMask == GlobalConstants.Category.virus {
+            if let ball = fstBody.node as? Ball {
+                if let virus = sndBody.node as? Virus {
+                    if ball.radius >= virus.radius {
+                        if let p = ball.parent {
+                            ball.split(min(4, 16 - p.children.count + 1))
+                            virus.removeFromParent()
                         }
                     }
                 }
-                if fstNode.name!.hasPrefix("food") && sndNode.name!.hasPrefix("ball") {
-                    let ball = sndNode as! Ball
-                    ball.beginContact(fstNode as! Food)
-                }
-                
-                if fstNode.name!.hasPrefix("ball") && sndNode.name!.hasPrefix("ball") {
-                    var ball1 = fstNode as! Ball // Big
-                    var ball2 = sndNode as! Ball // Small
+            }
+            
+        } else if fstBody.categoryBitMask == GlobalConstants.Category.food && sndBody.categoryBitMask == GlobalConstants.Category.ball {
+            if let ball = sndBody.node as? Ball {
+                ball.beginContact(fstBody.node as! Food)
+            }
+        } else if fstBody.categoryBitMask == GlobalConstants.Category.ball && sndBody.categoryBitMask == GlobalConstants.Category.ball {
+            if var ball1 = fstBody.node as? Ball { // Big
+                if var ball2 = sndBody.node as? Ball { // Small
                     if ball2.mass > ball1.mass {
                         let tmp = ball2
                         ball2 = ball1
@@ -464,16 +452,13 @@ extension GameScene : SKPhysicsContactDelegate {
             fstBody = contact.bodyB
             sndBody = contact.bodyA
         }
-        if let fstNode = fstBody.node {
-            if let sndNode = sndBody.node {
-                if fstNode.name!.hasPrefix("food") && sndNode.name!.hasPrefix("ball") {
-                    let ball = sndNode as! Ball
-                    ball.endContact(fstNode as! Food)
-                }
-                
-                if fstNode.name!.hasPrefix("ball") && sndNode.name!.hasPrefix("ball") {
-                    var ball1 = fstNode as! Ball // Big
-                    var ball2 = sndNode as! Ball // Small
+        if fstBody.categoryBitMask == GlobalConstants.Category.food && sndBody.categoryBitMask == GlobalConstants.Category.ball {
+            if let ball = sndBody.node as? Ball {
+                ball.endContact(fstBody.node as! Food)
+            }
+        } else if fstBody.categoryBitMask == GlobalConstants.Category.ball && sndBody.categoryBitMask == GlobalConstants.Category.ball {
+            if var ball1 = fstBody.node as? Ball { // Big
+                if var ball2 = sndBody.node as? Ball { // Small
                     if ball2.mass > ball1.mass {
                         let tmp = ball2
                         ball2 = ball1

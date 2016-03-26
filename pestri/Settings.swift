@@ -1,11 +1,3 @@
-//
-//  Settings.swift
-//  agario
-//
-//  Created by Yunhan Li on 9/22/15.
-//
-//
-
 import UIKit
 
 class Settings: UIView {

@@ -1,11 +1,3 @@
-//
-//  Player.swift
-//  agario
-//
-//  Created by Yunhan Li on 9/15/15.
-//
-//
-
 import SpriteKit
 
 class Player : SKNode {
@@ -37,7 +29,6 @@ class Player : SKNode {
     }
     
     func centerPosition() -> CGPoint {
-        //let count = CGFloat(self.children.count)
         var x = CGFloat(0)
         var y = CGFloat(0)
         let m = self.totalMass()
@@ -76,7 +67,7 @@ class Player : SKNode {
     }
     
     func checkDeath() {
-        if self.children.count == 0 {
+        if self.isDead() {
             self.removeFromParent()
         }
     }

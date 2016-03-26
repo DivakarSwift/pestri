@@ -1,11 +1,3 @@
-//
-//  Utilities.swift
-//  agario
-//
-//  Created by Ming on 9/13/15.
-//
-//
-
 import SpriteKit
 
 extension CGVector {
@@ -44,10 +36,10 @@ func -(lhs: CGPoint, rhs: CGPoint) -> CGVector {
     return CGVector(dx: lhs.x - rhs.x, dy: lhs.y - rhs.y)
 }
 
-func randomColor() -> Int {
+func randomColor() -> UIColor {
     let maxIdx = GlobalConstants.Color.count - 1
     let randi  = Int(arc4random_uniform(UInt32(maxIdx)))
-    return GlobalConstants.Color[randi]
+    return UIColor(hex: GlobalConstants.Color[randi])
 }
 
 func randomPosition() -> CGPoint {

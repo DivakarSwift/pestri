@@ -1,33 +1,23 @@
-//
-//  Ball.swift
-//  agar-clone
-//
-//  Created by Ming on 9/13/15.
-//
-//
-
 import SpriteKit
 
-class Ball : SKShapeNode {
+class Ball : SKSpriteNode {
     var targetDirection = CGVector(dx: 0, dy: 0)
     var maxVelocity     = CGFloat(200.0)
     var force           = CGFloat(5000.0)
     var radius          = CGFloat(0)
-    var color:Int?      = nil
-    var mass : CGFloat!
+    var mass : CGFloat = 0
     var ballName : String?
     var readyMerge = false
     var impulsive = true
     var contacted : Set<SKNode> = []
     var nameLabel : SKLabelNode? = nil
     
-    init(ballName name : String?, ballColor color : Int, ballMass mass : CGFloat, ballPosition pos : CGPoint) {
-        super.init()
+    init(ballName name : String?, ballColor color : UIColor, ballMass mass : CGFloat, ballPosition pos : CGPoint) {
+        super.init(texture: SKTexture(imageNamed: "circle"), color: color, size: CGSize(width: radius * 2, height: radius * 2))
         self.name   = "ball-" + NSUUID().UUIDString
         self.ballName = name
-        self.color  = color
         self.position = pos
-        self.setMass(mass)
+        self.setNewMass(mass)
         
         //Graphic
         self.drawBall()
@@ -39,7 +29,7 @@ class Ball : SKShapeNode {
         
         // Name label
         if let nm = self.ballName {
-            self.nameLabel = SKLabelNode(fontNamed: "AmericanTypewriter-Bold")
+            self.nameLabel = SKLabelNode(fontNamed: "HelveticaNeue")
             self.nameLabel!.text = nm
             self.nameLabel!.fontSize = 16
             self.nameLabel!.horizontalAlignmentMode = .Center
@@ -61,10 +51,13 @@ class Ball : SKShapeNode {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setMass(m : CGFloat) {
+    func setNewMass(m : CGFloat) {
+        if (m == self.mass) {
+            return
+        }
         self.mass = m
         self.zPosition = m
-        self.force = 5000.0 * self.mass / 10.0
+        self.force = 500.0 * self.mass
         self.maxVelocity = 200.0 / log10(self.mass)
         self.radius = sqrt(m) * 10.0
         
@@ -75,16 +68,17 @@ class Ball : SKShapeNode {
     
     func drawBall() {
         let diameter = self.radius * 2
-        self.path = CGPathCreateWithEllipseInRect(CGRect(origin: CGPoint(x: -self.radius, y: -self.radius), size: CGSize(width: diameter, height: diameter)), nil)
+        self.size = CGSize(width: diameter, height: diameter)
     }
     
     func setBallSkin() {
         let _ballname = self.ballName!.lowercaseString
         if GlobalConstants.Skin.indexForKey(_ballname) != nil{
-            self.fillColor = UIColor.whiteColor()
-            self.fillTexture = SKTexture(imageNamed: GlobalConstants.Skin[_ballname]!)
+            self.color = UIColor.whiteColor()
+            self.texture = SKTexture(imageNamed: GlobalConstants.Skin[_ballname]!)
+            self.colorBlendFactor = 0;
         } else {
-            self.fillColor = UIColor(hex: self.color!)
+            self.colorBlendFactor = 1;
         }
     }
     
@@ -96,8 +90,7 @@ class Ball : SKShapeNode {
         self.physicsBody?.allowsRotation = false
         self.physicsBody?.categoryBitMask = GlobalConstants.Category.ball
         self.physicsBody?.collisionBitMask = GlobalConstants.Category.wall
-        self.physicsBody?.contactTestBitMask = GlobalConstants.Category.barrier | GlobalConstants.Category.ball
-        //self.zPosition = GlobalConstants.ZPosition.ball
+        self.physicsBody?.contactTestBitMask = GlobalConstants.Category.virus | GlobalConstants.Category.ball
     }
     
     func regulateSpeed() {
@@ -108,14 +101,12 @@ class Ball : SKShapeNode {
         
         if v!.dx * v!.dx + v!.dy * v!.dy > maxVelocity * maxVelocity {
             self.physicsBody?.velocity = v!.normalize() * maxVelocity
-            //self.physicsBody?.velocity = v! * 0.99
         }
     }
     
     func refresh() {
         if targetDirection.dx * targetDirection.dx + targetDirection.dy * targetDirection.dy > radius * radius {
             self.physicsBody?.applyForce(targetDirection.normalize() * force)
-            //self.physicsBody?.velocity = targetDirection.normalize() * maxVelocity
         } else {
             if !impulsive {
                 self.physicsBody?.velocity = (self.physicsBody?.velocity)! * CGFloat(0.9)
@@ -173,7 +164,7 @@ class Ball : SKShapeNode {
         if let p = self.parent {
             var newballs : [Ball] = []
             for _ in 0..<n {
-                newballs.append(Ball(ballName: self.ballName, ballColor: self.color!,
+                newballs.append(Ball(ballName: self.ballName, ballColor: self.color,
                     ballMass: floor(self.mass / CGFloat(n)), ballPosition: self.position))
             }
             if let v = self.physicsBody?.velocity {
@@ -199,11 +190,7 @@ class Ball : SKShapeNode {
     func eatFood(food : Food) {
         // Destroy the food been eaten
         food.removeFromParent()
-        self.setMass(self.mass! + 1)
-        self.drawBall()
-        let oldv = self.physicsBody?.velocity
-        self.initPhysicsBody()
-        self.physicsBody?.velocity = oldv!
+        self.updatePhysicsBodyWithNewMass(self.mass + 1)
     }
     
     func resetReadyMerge() {
@@ -220,12 +207,15 @@ class Ball : SKShapeNode {
     
     func eatBall(ball : Ball) {
         ball.removeFromParent()
-        self.setMass(self.mass! + ball.mass)
+        self.updatePhysicsBodyWithNewMass(self.mass + ball.mass)
+    }
+    
+    func updatePhysicsBodyWithNewMass(mass: CGFloat) {
+        self.setNewMass(mass)
         self.drawBall()
         let oldv = self.physicsBody?.velocity
         self.initPhysicsBody()
         self.physicsBody?.velocity = oldv!
-        //self.physicsBody?.velocity = oldv!.normalize() * self.maxVelocity
     }
     
     func beginContact(node : SKNode) {
@@ -243,7 +233,7 @@ class Ball : SKShapeNode {
         let dx = Double(v!.dx)
         let dy = Double(v!.dy)
         let mass = Double(self.mass)
-        let json : JSON = ["name": self.name!, "ballName": self.ballName!, "color": self.color!, "mass": mass, "x": x, "y": y, "dx": dx, "dy": dy, "tdx": Double(self.targetDirection.dx), "tdy": Double(self.targetDirection.dy)]
+        let json : JSON = ["name": self.name!, "ballName": self.ballName!, "color": self.color.toHexString(), "mass": mass, "x": x, "y": y, "dx": dx, "dy": dy, "tdx": Double(self.targetDirection.dx), "tdy": Double(self.targetDirection.dy)]
         return json
     }
 }

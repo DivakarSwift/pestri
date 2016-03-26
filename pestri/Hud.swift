@@ -1,11 +1,3 @@
-//
-//  Hud.swift
-//  agario
-//
-//  Created by Yunhan Li on 9/16/15.
-//
-//
-
 import SpriteKit
 
 class Hud: SKNode {
@@ -32,7 +24,7 @@ class Hud: SKNode {
         
         for i in 0 ..< min(lst.count, 3) {
             let s = String(lst[i]["name"]!)
-            scoreLabel[i].text = String(i + 1) + " . " + (s.characters.count > 0 ? s : "Annoymous")
+            scoreLabel[i].text = String(i + 1) + " . " + (s.characters.count > 0 ? s : "Anonymous")
         }
     }
     

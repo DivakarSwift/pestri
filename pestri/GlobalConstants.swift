@@ -1,10 +1,3 @@
-//
-//  GlobalConstants.swift
-//  agario
-//
-//  Created by Yunhan Li on 9/18/15.
-//
-//
 import SpriteKit
 struct GlobalConstants {
     
@@ -12,13 +5,13 @@ struct GlobalConstants {
         static let wall      :UInt32 = 0b0001;
         static let food      :UInt32 = 0b0010;
         static let ball      :UInt32 = 0b0100;
-        static let barrier   :UInt32 = 0b1000;
+        static let virus     :UInt32 = 0b1000;
     }
     
     struct ZPosition {
         static let food    :CGFloat = 0
         static let ball    :CGFloat = 10
-        static let barrier :CGFloat = 49
+        static let virus   :CGFloat = 49
         static let wall    :CGFloat = 200000
     }
     
@@ -47,14 +40,13 @@ struct GlobalConstants {
     ]
     
     static let FoodRadius = CGFloat(10)
-    static let BarrierRadius = CGFloat(70)
+    static let VirusRadius = CGFloat(70)
     static let MapSize = CGSize(width: 4000, height: 4000)
     static let FoodLimit = 500
     static let FoodRespawnRate = 40
-    static let BarrierLimit = 15
-    static let BarrierRespawnInterval = 45
+    static let VirusLimit = 15
+    static let VirusRespawnInterval = 45
     static let LeaderboardUpdateInterval = 2
-    static let PersistentLeaderboardUpdateInterval = 30
     static let MaxNameLength = 10
     
     // Server

@@ -1,11 +1,3 @@
-//
-//  GameViewController.swift
-//  agar-clone
-//
-//  Created by Ming on 8/24/15.
-//  Copyright (c) 2015 __MyCompanyName__. All rights reserved.
-//
-
 import UIKit
 import SpriteKit
 import MultipeerConnectivity
@@ -76,7 +68,7 @@ class GameViewController: UIViewController, MCBrowserViewControllerDelegate, MCA
         self.advertiser.stop()
         
         // Set Player Name
-        self.scene.playerName = GKLocalPlayer.localPlayer().alias!
+        self.scene.playerName = "Me"
         self.scene.start()
     }
     

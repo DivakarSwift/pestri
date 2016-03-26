@@ -1,27 +1,19 @@
-//
-//  Barrier.swift
-//  agario
-//
-//  Created by Yunhan Li on 9/18/15.
-//
-//
-
 import SpriteKit
 
-class Barrier : SKSpriteNode {
-    var radius = GlobalConstants.BarrierRadius
+class Virus : SKSpriteNode {
+    var radius = GlobalConstants.VirusRadius
     
     init() {
-        super.init(texture: SKTexture(imageNamed: "barrier"),
+        super.init(texture: SKTexture(imageNamed: "virus"),
             color: SKColor.whiteColor(),
             size: CGSize(width: 2 * radius, height: 2 * radius))
-        self.name   = "barrier-" + NSUUID().UUIDString
+        self.name   = "virus-" + NSUUID().UUIDString
         self.physicsBody = SKPhysicsBody(circleOfRadius: radius)
         self.physicsBody?.dynamic = false
-        self.physicsBody?.categoryBitMask = GlobalConstants.Category.barrier
-        self.physicsBody?.collisionBitMask = GlobalConstants.Category.wall | GlobalConstants.Category.barrier
-        self.physicsBody?.contactTestBitMask = GlobalConstants.Category.ball | GlobalConstants.Category.food
-        self.zPosition = GlobalConstants.ZPosition.barrier
+        self.physicsBody?.categoryBitMask = GlobalConstants.Category.virus
+        self.physicsBody?.collisionBitMask = GlobalConstants.Category.wall | GlobalConstants.Category.virus
+        self.physicsBody?.contactTestBitMask = GlobalConstants.Category.ball
+        self.zPosition = GlobalConstants.ZPosition.virus
         
         self.position = randomPosition()
         

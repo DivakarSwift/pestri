@@ -1,11 +1,3 @@
-//
-//  Vector3D.swift
-//  agario
-//
-//  Created by Yunhan Li on 9/24/15.
-//
-//
-
 import SpriteKit
 
 struct Vector3D {

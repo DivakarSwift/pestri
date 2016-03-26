@@ -1,10 +1,3 @@
-//
-//  Food.swift
-//  agario
-//
-//  Created by Yunhan Li on 9/15/15.
-//
-//
 import SpriteKit
 
 class Food : SKSpriteNode {
@@ -13,18 +6,15 @@ class Food : SKSpriteNode {
     
     static var counter : Int = 0
     
-    init(foodColor color: Int){
-        //super.init()
-        super.init(texture: nil, color: UIColor(hex: color), size: CGSize(width: radius * 2, height: radius * 2))
+    init(foodColor color: UIColor){
+        super.init(texture: SKTexture(imageNamed: "circle"), color: color, size: CGSize(width: radius * 2, height: radius * 2))
+        self.colorBlendFactor = 1;
         self.name   = "food-" + NSUUID().UUIDString
-        //let diameter = radius * 2
-        //self.path = CGPathCreateWithEllipseInRect(CGRect(origin: CGPoint(x: -radius, y: -radius), size: CGSize(width: diameter, height: diameter)), nil)
         self.physicsBody = SKPhysicsBody(circleOfRadius: radius)
-        //self.fillColor = UIColor(hex: color)
         self.physicsBody?.dynamic = false
         self.physicsBody?.categoryBitMask = GlobalConstants.Category.food
         self.physicsBody?.collisionBitMask = GlobalConstants.Category.wall
-        self.physicsBody?.contactTestBitMask = GlobalConstants.Category.ball | GlobalConstants.Category.barrier
+        self.physicsBody?.contactTestBitMask = GlobalConstants.Category.ball
         self.zPosition = GlobalConstants.ZPosition.food
         
         self.position = randomPosition()

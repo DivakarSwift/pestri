@@ -1,11 +1,3 @@
-//
-//  Menu.swift
-//  agario
-//
-//  Created by Yunhan Li on 9/19/15.
-//
-//
-
 import UIKit
 
 class Menu: UIView {

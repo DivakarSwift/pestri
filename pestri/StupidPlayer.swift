@@ -1,11 +1,3 @@
-//
-//  StupidPlayer.swift
-//  agario
-//
-//  Created by Ming on 9/22/15.
-//
-//
-
 import SpriteKit
 
 class StupidPlayer : Player {

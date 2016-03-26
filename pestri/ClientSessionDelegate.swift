@@ -1,11 +1,3 @@
-//
-//  ClientSessionDelegate.swift
-//  agario
-//
-//  Created by Ming on 10/4/15.
-//
-//
-
 import SpriteKit
 import MultipeerConnectivity
 
@@ -88,7 +80,7 @@ class ClientSessionDelegate : NSObject, MCSessionDelegate {
                     let nm = subjson["name"].stringValue
                     newids.insert(nm)
                     if !foodSet.contains(nm) {
-                        let fd = Food(foodColor: subjson["color"].intValue)
+                        let fd = Food(foodColor: UIColor(hex: subjson["color"].intValue))
                         fd.name = nm
                         fd.position.x = CGFloat(subjson["x"].double!)
                         fd.position.y = CGFloat(subjson["y"].double!)
@@ -143,11 +135,11 @@ class ClientSessionDelegate : NSObject, MCSessionDelegate {
                             
                             let ms = CGFloat(ballJSON["mass"].doubleValue)
                             if ball.mass != ms {
-                                ball.setMass(ms)
+                                ball.setNewMass(ms)
                                 ball.drawBall()
                             }
                         } else { // New ball
-                            let ball = Ball(ballName: ballJSON["ballName"].stringValue, ballColor: ballJSON["color"].intValue, ballMass: CGFloat(ballJSON["mass"].doubleValue), ballPosition: p)
+                            let ball = Ball(ballName: ballJSON["ballName"].stringValue, ballColor: UIColor(hex: ballJSON["color"].intValue), ballMass: CGFloat(ballJSON["mass"].doubleValue), ballPosition: p)
                             ball.targetDirection = td
                             ball.name = ballJSON["name"].stringValue
                             ball.physicsBody!.velocity = v
@@ -157,15 +149,15 @@ class ClientSessionDelegate : NSObject, MCSessionDelegate {
                 }
             })
             
-            self.updateLayer(self.scene.barrierLayer, array: json["barriers"], handler: { (node : SKNode?, json) -> Void in
+            self.updateLayer(self.scene.virusLayer, array: json["virus"], handler: { (node : SKNode?, json) -> Void in
                 if let _ = node {
                     // Wont need any change
                 } else {
-                    let br = Barrier()
+                    let br = Virus()
                     br.name = json["name"].stringValue
                     br.position.x = CGFloat(json["x"].double!)
                     br.position.y = CGFloat(json["y"].double!)
-                    self.scene.barrierLayer.addChild(br)
+                    self.scene.virusLayer.addChild(br)
                 }
             })
             

@@ -1,11 +1,3 @@
-//
-//  AppDelegate.swift
-//  agar-clone
-//
-//  Created by Ming on 8/24/15.
-//
-//
-
 import UIKit
 
 @UIApplicationMain

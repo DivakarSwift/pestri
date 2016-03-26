@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		037072AF1CA6067600A9432A /* circle.png in Resources */ = {isa = PBXBuildFile; fileRef = 037072AE1CA6067600A9432A /* circle.png */; };
 		03CCE9E11CA5BAFD00E12F2E /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03CCE9E01CA5BAFD00E12F2E /* GameKit.framework */; };
 		03CCE9E31CA5BBDB00E12F2E /* GameKitHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CCE9E21CA5BBDB00E12F2E /* GameKitHelper.swift */; };
 		03CCE9E71CA5C3A300E12F2E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 03CCE9E61CA5C3A300E12F2E /* Main.storyboard */; };
@@ -32,7 +33,7 @@
 		B51EC6FF1BB13C6E0079FDEC /* icon-info.png in Resources */ = {isa = PBXBuildFile; fileRef = B51EC6FE1BB13C6E0079FDEC /* icon-info.png */; };
 		B51EC7031BB13DCE0079FDEC /* icon-settings.png in Resources */ = {isa = PBXBuildFile; fileRef = B51EC7021BB13DCE0079FDEC /* icon-settings.png */; };
 		B527CEA41BAC36F3000054CE /* GlobalConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B527CEA31BAC36F3000054CE /* GlobalConstants.swift */; };
-		B527CEA61BAC40B7000054CE /* Barrier.swift in Sources */ = {isa = PBXBuildFile; fileRef = B527CEA51BAC40B7000054CE /* Barrier.swift */; };
+		B527CEA61BAC40B7000054CE /* Virus.swift in Sources */ = {isa = PBXBuildFile; fileRef = B527CEA51BAC40B7000054CE /* Virus.swift */; };
 		B533E9D61BBBACB50064C917 /* icon-pause.png in Resources */ = {isa = PBXBuildFile; fileRef = B533E9D51BBBACB50064C917 /* icon-pause.png */; };
 		B53441571BA83029005EEEAB /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = B53441561BA83029005EEEAB /* Player.swift */; };
 		B538EB431BAD28A300D3E148 /* Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = B538EB421BAD28A300D3E148 /* Menu.swift */; };
@@ -50,11 +51,12 @@
 		B5EB9C101BB180E4007A5D8D /* australia.png in Resources */ = {isa = PBXBuildFile; fileRef = B5EB9C0F1BB180E4007A5D8D /* australia.png */; };
 		B5EB9C121BB18194007A5D8D /* india.png in Resources */ = {isa = PBXBuildFile; fileRef = B5EB9C111BB18194007A5D8D /* india.png */; };
 		B5EB9C141BB18361007A5D8D /* doge.png in Resources */ = {isa = PBXBuildFile; fileRef = B5EB9C131BB18361007A5D8D /* doge.png */; };
-		B5EB9C201BB19B70007A5D8D /* barrier.png in Resources */ = {isa = PBXBuildFile; fileRef = B5EB9C1F1BB19B70007A5D8D /* barrier.png */; };
+		B5EB9C201BB19B70007A5D8D /* virus.png in Resources */ = {isa = PBXBuildFile; fileRef = B5EB9C1F1BB19B70007A5D8D /* virus.png */; };
 		B5F759FF1BAD9D0A00953E9A /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5F759FE1BAD9D0A00953E9A /* UIColorExtension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		037072AE1CA6067600A9432A /* circle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = circle.png; sourceTree = "<group>"; };
 		03CCE9E01CA5BAFD00E12F2E /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 		03CCE9E21CA5BBDB00E12F2E /* GameKitHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameKitHelper.swift; sourceTree = "<group>"; };
 		03CCE9E61CA5C3A300E12F2E /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
@@ -82,7 +84,7 @@
 		B51EC6FE1BB13C6E0079FDEC /* icon-info.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-info.png"; sourceTree = "<group>"; };
 		B51EC7021BB13DCE0079FDEC /* icon-settings.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-settings.png"; sourceTree = "<group>"; };
 		B527CEA31BAC36F3000054CE /* GlobalConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobalConstants.swift; sourceTree = "<group>"; };
-		B527CEA51BAC40B7000054CE /* Barrier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Barrier.swift; sourceTree = "<group>"; };
+		B527CEA51BAC40B7000054CE /* Virus.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Virus.swift; sourceTree = "<group>"; };
 		B533E9D51BBBACB50064C917 /* icon-pause.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-pause.png"; sourceTree = "<group>"; };
 		B53441561BA83029005EEEAB /* Player.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		B538EB421BAD28A300D3E148 /* Menu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Menu.swift; sourceTree = "<group>"; };
@@ -100,7 +102,7 @@
 		B5EB9C0F1BB180E4007A5D8D /* australia.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = australia.png; sourceTree = "<group>"; };
 		B5EB9C111BB18194007A5D8D /* india.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = india.png; sourceTree = "<group>"; };
 		B5EB9C131BB18361007A5D8D /* doge.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = doge.png; sourceTree = "<group>"; };
-		B5EB9C1F1BB19B70007A5D8D /* barrier.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = barrier.png; sourceTree = "<group>"; };
+		B5EB9C1F1BB19B70007A5D8D /* virus.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = virus.png; sourceTree = "<group>"; };
 		B5F759FE1BAD9D0A00953E9A /* UIColorExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColorExtension.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -132,7 +134,7 @@
 		03CCE9E51CA5C33200E12F2E /* nodes */ = {
 			isa = PBXGroup;
 			children = (
-				B527CEA51BAC40B7000054CE /* Barrier.swift */,
+				B527CEA51BAC40B7000054CE /* Virus.swift */,
 				3A8205F91BCBD73500380348 /* AIPlayer.swift */,
 				3A414FD01BB071DE00FCB78C /* StupidPlayer.swift */,
 				B53441561BA83029005EEEAB /* Player.swift */,
@@ -198,11 +200,12 @@
 			children = (
 				B5906D931BB173040002BB00 /* skin */,
 				B51EC6FE1BB13C6E0079FDEC /* icon-info.png */,
+				037072AE1CA6067600A9432A /* circle.png */,
 				B5C28BFF1BBABF2E0084D87D /* icon-leaderboard.png */,
 				B533E9D51BBBACB50064C917 /* icon-pause.png */,
 				B51EC7021BB13DCE0079FDEC /* icon-settings.png */,
 				B51EC6FC1BB13A470079FDEC /* icon-exit.png */,
-				B5EB9C1F1BB19B70007A5D8D /* barrier.png */,
+				B5EB9C1F1BB19B70007A5D8D /* virus.png */,
 				B59016D31BA6AD27008215A3 /* pattern.png */,
 				B5E0B1C71BA9271C00A153EC /* split-button.png */,
 				3A6A6EB31BA59D9200FC75A1 /* Info.plist */,
@@ -292,7 +295,7 @@
 				B533E9D61BBBACB50064C917 /* icon-pause.png in Resources */,
 				B5EB9C0C1BB180C6007A5D8D /* uk.png in Resources */,
 				B5EB9C121BB18194007A5D8D /* india.png in Resources */,
-				B5EB9C201BB19B70007A5D8D /* barrier.png in Resources */,
+				B5EB9C201BB19B70007A5D8D /* virus.png in Resources */,
 				B59016D41BA6AD27008215A3 /* pattern.png in Resources */,
 				B5EB9C0E1BB180CE007A5D8D /* canada.png in Resources */,
 				B5906D951BB173470002BB00 /* usa.png in Resources */,
@@ -307,6 +310,7 @@
 				B5EB9C141BB18361007A5D8D /* doge.png in Resources */,
 				B5C28C001BBABF2E0084D87D /* icon-leaderboard.png in Resources */,
 				B5906D9B1BB173520002BB00 /* german.png in Resources */,
+				037072AF1CA6067600A9432A /* circle.png in Resources */,
 				3A6A6EB71BA59D9200FC75A1 /* GameScene.sks in Resources */,
 				B5906D9D1BB1748E0002BB00 /* china.png in Resources */,
 			);
@@ -337,7 +341,7 @@
 				B538EB431BAD28A300D3E148 /* Menu.swift in Sources */,
 				3A6A6EDD1BA5A72200FC75A1 /* Utilities.swift in Sources */,
 				3A414FD11BB071DE00FCB78C /* StupidPlayer.swift in Sources */,
-				B527CEA61BAC40B7000054CE /* Barrier.swift in Sources */,
+				B527CEA61BAC40B7000054CE /* Virus.swift in Sources */,
 				03CCE9EA1CA5C5CA00E12F2E /* GameNavigationController.swift in Sources */,
 				B53441571BA83029005EEEAB /* Player.swift in Sources */,
 				3AB24E4D1BC14A4C00E8D793 /* MasterSessionDelegate.swift in Sources */,
@@ -450,7 +454,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				INFOPLIST_FILE = agario/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/pestri/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = me.dutour.mathieu.pestri;
 				PRODUCT_NAME = pestri;
@@ -464,7 +468,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				INFOPLIST_FILE = agario/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/pestri/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = me.dutour.mathieu.pestri;
 				PRODUCT_NAME = pestri;

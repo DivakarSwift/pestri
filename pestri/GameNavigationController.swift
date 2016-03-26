@@ -1,11 +1,3 @@
-//
-//  GameNavigationController.swift
-//  pestri
-//
-//  Created by Mathieu Dutour on 25/03/2016.
-//
-//
-
 import UIKit
 
 class GameNavigationController: UINavigationController {

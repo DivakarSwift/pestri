@@ -1,11 +1,3 @@
-//
-//  PauseView.swift
-//  agario
-//
-//  Created by Ming on 10/4/15.
-//
-//
-
 import SpriteKit
 
 class PauseView: UIView {

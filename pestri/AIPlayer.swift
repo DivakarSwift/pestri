@@ -1,11 +1,3 @@
-//
-//  AIPlayer.swift
-//  agario
-//
-//  Created by Ming on 10/12/15.
-//
-//
-
 import SpriteKit
 
 class AIPlayer : Player {

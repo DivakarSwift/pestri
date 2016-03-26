@@ -1,11 +1,3 @@
-//
-//  MasterSessionDelegate.swift
-//  agario
-//
-//  Created by Ming on 10/4/15.
-//
-//
-
 import SpriteKit
 import MultipeerConnectivity
 
@@ -48,12 +40,12 @@ class MasterSessionDelegate : NSObject, MCSessionDelegate {
             }
             json["players"] = JSON(playerArray)
             
-            // Barriers
-            var barrierArray : [JSON] = []
-            for f in self.scene.barrierLayer.children as! [Barrier] {
-                barrierArray.append(f.toJSON())
+            // Virus
+            var virusArray : [JSON] = []
+            for f in self.scene.virusLayer.children as! [Virus] {
+                virusArray.append(f.toJSON())
             }
-            json["barriers"] = JSON(barrierArray)
+            json["virus"] = JSON(virusArray)
             
             do {
                 try self.session.sendData(json.rawData(), toPeers: self.session.connectedPeers, withMode: MCSessionSendDataMode.Unreliable)

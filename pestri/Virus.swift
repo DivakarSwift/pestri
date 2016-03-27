@@ -27,7 +27,7 @@ class Virus : SKSpriteNode {
     }
     
     func toJSON() -> JSON {
-        let json : JSON = ["name": self.name!, "x": Double(self.position.x), "y": Double(self.position.y)]
+        let json : JSON = ["name": self.name!, "x": round(Double(self.position.x)), "y": round(Double(self.position.y))]
         return json
     }
 }

@@ -40,19 +40,25 @@
                                 <rect key="frame" x="256" y="285" width="89" height="30"/>
                                 <state key="normal" title="Single Player"/>
                                 <connections>
-                                    <segue destination="jY5-DF-QDn" kind="show" id="ae0-aI-ps5"/>
+                                    <segue destination="jY5-DF-QDn" kind="show" identifier="startGame" id="ae0-aI-ps5"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="q3N-Dg-YYQ">
                                 <rect key="frame" x="262" y="342" width="76" height="30"/>
                                 <state key="normal" title="Multiplayer"/>
+                                <state key="disabled">
+                                    <color key="titleColor" red="0.94901960780000005" green="0.95294117649999999" blue="0.79607843140000001" alpha="1" colorSpace="calibratedRGB"/>
+                                </state>
                                 <connections>
-                                    <segue destination="jY5-DF-QDn" kind="show" id="Btm-tH-j5k"/>
+                                    <action selector="startMultiplayerGame:" destination="wvX-qk-u02" eventType="touchUpInside" id="YlR-9A-lnJ"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="u4i-Gd-9fP">
                                 <rect key="frame" x="386" y="550" width="87" height="30"/>
                                 <state key="normal" title="Leaderboard"/>
+                                <connections>
+                                    <action selector="showLeaderboard:" destination="wvX-qk-u02" eventType="touchUpInside" id="X8s-yR-eQR"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="M9K-Pn-2xa">
                                 <rect key="frame" x="523" y="550" width="57" height="30"/>
@@ -72,6 +78,9 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="rcd-vv-IgB"/>
+                    <connections>
+                        <outlet property="multiplayerButton" destination="q3N-Dg-YYQ" id="oV7-Ac-pdl"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="61t-wb-JWx" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -85,7 +94,7 @@
                         <viewControllerLayoutGuide type="top" id="nUv-O2-tsG"/>
                         <viewControllerLayoutGuide type="bottom" id="coU-ti-ToD"/>
                     </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="s61-Ce-N8O" customClass="I">
+                    <view key="view" contentMode="scaleToFill" id="s61-Ce-N8O">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -97,7 +106,4 @@
             <point key="canvasLocation" x="1679" y="342"/>
         </scene>
     </scenes>
-    <inferredMetricsTieBreakers>
-        <segue reference="ae0-aI-ps5"/>
-    </inferredMetricsTieBreakers>
 </document>

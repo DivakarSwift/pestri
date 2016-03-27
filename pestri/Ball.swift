@@ -233,7 +233,7 @@ class Ball : SKSpriteNode {
         let dx = Double(v!.dx)
         let dy = Double(v!.dy)
         let mass = Double(self.mass)
-        let json : JSON = ["name": self.name!, "ballName": self.ballName!, "color": self.color.toHexString(), "mass": mass, "x": x, "y": y, "dx": dx, "dy": dy, "tdx": Double(self.targetDirection.dx), "tdy": Double(self.targetDirection.dy)]
+        let json : JSON = ["name": self.name!, "ballName": self.ballName!, "color": self.color.toHexString(), "mass": mass, "x": round(x), "y": round(y), "dx": round(dx), "dy": round(dy), "tdx": round(Double(self.targetDirection.dx)), "tdy": round(Double(self.targetDirection.dy))]
         return json
     }
 }

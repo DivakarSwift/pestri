@@ -19,16 +19,14 @@ extension SKNode {
     }
 }
 
-class GameViewController: UIViewController, MCBrowserViewControllerDelegate, MCAdvertiserAssistantDelegate {
+class GameViewController: UIViewController, GameKitHelperDelegate{
     var gameView : SKView!
     var scene : GameScene!
-    
-    // Multipeer part
-    var browser : MCBrowserViewController!
-    var advertiser : MCAdvertiserAssistant!
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        GameKitHelper.sharedInstance._delegate = self
         
         // Game view set up
         self.gameView = SKView(frame: UIScreen.mainScreen().bounds)
@@ -36,8 +34,11 @@ class GameViewController: UIViewController, MCBrowserViewControllerDelegate, MCA
         if let scene = GameScene.unarchiveFromFile("GameScene") as? GameScene {
             // Configure the view.
             let skView = self.gameView
-            skView.showsFPS = true
-            skView.showsNodeCount = true
+    
+            #if DEBUG
+                skView.showsFPS = true
+                skView.showsNodeCount = true
+            #endif
             
             /* Sprite Kit applies additional optimizations to improve rendering performance */
             skView.ignoresSiblingOrder = true
@@ -53,56 +54,32 @@ class GameViewController: UIViewController, MCBrowserViewControllerDelegate, MCA
         }
         self.view = gameView
         
-        // Multipeer init
-        self.browser = MCBrowserViewController(serviceType: "agario-ming", session: self.scene.session)
-        self.browser.modalPresentationStyle = .FormSheet
-        self.browser.maximumNumberOfPeers = 1
-        self.browser.delegate = self
-        self.advertiser = MCAdvertiserAssistant(serviceType: "agario-ming", discoveryInfo: nil, session: self.scene.session)
-        self.advertiser.delegate = self
+        if GameKitHelper.sharedInstance._matchStarted {
+            self.startMultiple()
+        } else {
+            self.startSingle()
+        }
         
-        self.startSingle()
     }
     
     func startSingle() {
-        self.advertiser.stop()
-        
         // Set Player Name
-        self.scene.playerName = "Me"
-        self.scene.start()
+        if GKLocalPlayer.localPlayer().alias != nil {
+            self.scene.playerName = GKLocalPlayer.localPlayer().alias!
+        } else {
+            self.scene.playerName = "Me"
+        }
+        self.scene.start(GameScene.GameMode.Offline)
     }
     
     func startMultiple() {
         self.scene.playerName = GKLocalPlayer.localPlayer().alias!
-        self.advertiser.stop()
         
-        let alert = UIAlertController(title: "New Game or Existent Game", message: "Please make a decision", preferredStyle: .ActionSheet)
-        let masterAction = UIAlertAction(title: "Start a New Game", style: .Default) { (action) in
-            self.scene.start(GameScene.GameMode.MPMaster)
-            self.advertiser.start()
-            alert.dismissViewControllerAnimated(false, completion: { () -> Void in})
+        if GameKitHelper.sharedInstance._isServer {
+            self.scene.start(GameScene.GameMode.Server)
+        } else {
+            self.scene.start(GameScene.GameMode.Client)
         }
-        alert.addAction(masterAction)
-        let clientAction = UIAlertAction(title: "Search & Join a Game", style: .Default) { [unowned self, browser = self.browser] (action) in
-            self.presentViewController(browser, animated: true, completion: nil)
-            alert.dismissViewControllerAnimated(false, completion: { () -> Void in})
-        }
-        alert.addAction(clientAction)
-        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel) { (action) in
-            alert.dismissViewControllerAnimated(false, completion: nil)
-        }
-        alert.addAction(cancelAction)
-        presentViewController(alert, animated: true, completion: nil)
-    }
-    
-    func browserViewControllerDidFinish(browserViewController: MCBrowserViewController) {
-        self.scene.start(GameScene.GameMode.MPClient)
-        browserViewController.dismissViewControllerAnimated(true, completion: nil)
-    }
-    
-    func browserViewControllerWasCancelled(browserViewController: MCBrowserViewController) {
-        browser.session.disconnect()
-        browserViewController.dismissViewControllerAnimated(true, completion: nil)
     }
     
     func checkMotionDetectStatus(mdswitch: UISwitch) {
@@ -127,12 +104,23 @@ class GameViewController: UIViewController, MCBrowserViewControllerDelegate, MCA
         }
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Release any cached data, images, etc that aren't in use.
-    }
-
     override func prefersStatusBarHidden() -> Bool {
         return true
+    }
+    
+    func matchStarted() {
+        
+    }
+    
+    func matchEnded() {
+        scene.gameOver()
+    }
+    
+    func match(match: GKMatch, didReceiveData: NSData, fromPlayer: GKPlayer) {
+        if GameKitHelper.sharedInstance._isServer {
+            scene.serverDelegate.receiveData(didReceiveData, fromPlayer: fromPlayer)
+        } else {
+            scene.clientDelegate.receiveData(didReceiveData, fromPlayer: fromPlayer)
+        }
     }
 }

@@ -5,9 +5,9 @@ import MultipeerConnectivity
 class GameScene: SKScene {
     
     enum GameMode {
-        case SP // Single player
-        case MPMaster // Multi player master
-        case MPClient // Multi player client
+        case Offline
+        case Server
+        case Client
     }
     
     var parentView : GameViewController!
@@ -17,8 +17,6 @@ class GameScene: SKScene {
     var virusLayer : SKNode!
     var playerLayer : SKNode!
     var hudLayer : Hud!
-    var background : SKSpriteNode!
-    var defaultBackgroundColor : UIColor!
     
     var currentPlayer: Player? = nil
     var rank : [Dictionary<String, Any>] = []
@@ -37,28 +35,24 @@ class GameScene: SKScene {
     var pauseMenu : PauseView!
     var gameOverMenu : GameOverView!
     
-    var gameMode : GameMode! = GameMode.SP
+    var gameMode : GameMode! = GameMode.Offline
     
     // Multipeer variables
-    var session : MCSession!
     var clientDelegate : ClientSessionDelegate!
-    var masterDelegate : MasterSessionDelegate!
+    var serverDelegate : ServerSessionDelegate!
     
     override func didMoveToView(view: SKView) {
         paused = true
         self.view?.multipleTouchEnabled = true
         
         // Prepare multipeer connectivity
-        session = MCSession(peer: MCPeerID(displayName: UIDevice.currentDevice().name))
-        clientDelegate = ClientSessionDelegate(scene: self, session: session)
-        masterDelegate = MasterSessionDelegate(scene: self, session: session)
+        clientDelegate = ClientSessionDelegate(scene: self)
+        serverDelegate = ServerSessionDelegate(scene: self)
         
         world = self.childNodeWithName("world")!
         foodLayer = world.childNodeWithName("foodLayer")
         virusLayer = world.childNodeWithName("virusLayer")
         playerLayer = world.childNodeWithName("playerLayer")
-        background = world.childNodeWithName("//background") as! SKSpriteNode
-        defaultBackgroundColor = background.color
         
         /* Setup your scene here */
         world.position = CGPoint(x: CGRectGetMidX(frame),
@@ -85,12 +79,9 @@ class GameScene: SKScene {
         playerLayer.removeAllChildren()
         
         self.removeAllActions()
-        self.background.removeAllActions()
     }
     
-    func start(gameMode : GameMode = GameMode.SP) {
-        // set background to default color
-        self.background.color = self.defaultBackgroundColor
+    func start(gameMode : GameMode = GameMode.Offline) {
         
         self.gameMode = gameMode
         
@@ -100,7 +91,7 @@ class GameScene: SKScene {
             self.updateLeaderboard()
         }
         
-        if gameMode == GameMode.SP || gameMode == GameMode.MPMaster {
+        if gameMode == GameMode.Offline || gameMode == GameMode.Server {
             // Create Foods
             self.spawnFood(100)
             // Create Virus
@@ -116,24 +107,19 @@ class GameScene: SKScene {
         }
         
         // Spawn AI for single player mode
-        if gameMode == GameMode.SP {
+        if gameMode == GameMode.Offline {
             for _ in 0..<4 {
                 let _ = StupidPlayer(playerName: "Stupid AI", parentNode: self.playerLayer)
             }
             for _ in 0..<4 {
                 let _ = AIPlayer(playerName: "Smarter AI", parentNode: self.playerLayer)
             }
-        }
-        
-        if gameMode != GameMode.SP {
-            if gameMode == GameMode.MPMaster {
-                session.delegate = masterDelegate
+        } else {
+            if gameMode == GameMode.Server {
                 scheduleRunRepeat(self, time: Double(GlobalConstants.BroadcastInterval)) { () -> Void in
-                    self.masterDelegate.broadcast()
+                    self.serverDelegate.broadcast()
                 }
-            }
-            if gameMode == GameMode.MPClient {
-                session.delegate = clientDelegate
+            } else {
                 clientDelegate.requestSpawn()
             }
         }
@@ -147,7 +133,7 @@ class GameScene: SKScene {
         self.pauseMenu.hidden = false
         
         // Only pause in SP mode
-        if gameMode == GameMode.SP {
+        if gameMode == GameMode.Offline {
             self.paused = true
         }
     }
@@ -161,9 +147,8 @@ class GameScene: SKScene {
         self.paused = true
         self.pauseMenu.hidden = true
         self.gameOverMenu.hidden = true
-        // self.parentView.mainMenuView.hidden = false
-        
-        self.session.disconnect()
+        GameKitHelper.sharedInstance.disconnect()
+        self.parentView.navigationController?.popViewControllerAnimated(true)
     }
     
     func gameOver() {
@@ -173,7 +158,7 @@ class GameScene: SKScene {
     func respawn() {
         self.paused = false
         self.gameOverMenu.hidden = true
-        if gameMode == GameMode.SP || gameMode == GameMode.MPMaster {
+        if gameMode == GameMode.Offline || gameMode == GameMode.Server {
             if currentPlayer == nil || currentPlayer!.isDead() {
                 currentPlayer = Player(playerName: playerName, parentNode: self.playerLayer)
                 currentPlayer!.children.first!.position = randomPosition()
@@ -278,7 +263,7 @@ class GameScene: SKScene {
             return
         }
         
-        if gameMode == GameMode.MPClient {
+        if gameMode == GameMode.Client {
             clientDelegate.updateScene()
         } else {
             // Respawn food and virus
@@ -290,18 +275,18 @@ class GameScene: SKScene {
             if let v = motionDetection() {
                 let c = currentPlayer!.centerPosition()
                 let p = CGPoint(x: c.x + v.dx, y: c.y + v.dy)
-                if gameMode == GameMode.MPClient {
+                if gameMode == GameMode.Client {
                     clientDelegate.requestMove(p)
                 }
                 currentPlayer!.move(p)
             } else if let t = touchingLocation {
                 let p = t.locationInNode(world)
-                if gameMode == GameMode.MPClient {
+                if gameMode == GameMode.Client {
                     clientDelegate.requestMove(p)
                 }
                 currentPlayer!.move(p)
             } else {
-                if gameMode == GameMode.MPClient {
+                if gameMode == GameMode.Client {
                     clientDelegate.requestFloating()
                 }
                 currentPlayer!.floating()
@@ -346,7 +331,7 @@ class GameScene: SKScene {
             if self.hudLayer.splitBtn.containsPoint(screenLocation) {
                 if currentPlayer != nil {
                     currentPlayer!.split()
-                    if gameMode == GameMode.MPClient {
+                    if gameMode == GameMode.Client {
                         clientDelegate.requestSplit()
                     }
                 }

@@ -23,7 +23,7 @@ class GameOverView: UIView {
         self.backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.5)
         
         label = UILabel()
-        label.text = "You are eaten :<"
+        label.text = "You have been eaten :<"
         label.textAlignment = NSTextAlignment.Center
         label.textColor = UIColor.whiteColor()
         label.font = UIFont(name: "Chalkduster", size: label.font.pointSize * 1.5)

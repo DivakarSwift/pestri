@@ -25,8 +25,7 @@ class Food : SKSpriteNode {
     }
     
     func toJSON() -> JSON {
-        let json : JSON = ["name": self.name!, "color": colorToHex(self.color),
-            "x": Double(self.position.x), "y": Double(self.position.y)]
+        let json : JSON = ["name": self.name!, "x": round(Double(self.position.x)), "y": round(Double(self.position.y))]
         return json
     }
 }

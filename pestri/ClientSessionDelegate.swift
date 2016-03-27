@@ -1,73 +1,52 @@
 import SpriteKit
-import MultipeerConnectivity
+import GameKit
 
-class ClientSessionDelegate : NSObject, MCSessionDelegate {
+class ClientSessionDelegate : NSObject {
     
     var scene : GameScene!
-    var session : MCSession!
     var clientID : String? = nil
     var newestBroadcast : JSON? = nil
     
     // Special optimization for food
     var foodSet = Set<String>()
     
-    init(scene : GameScene, session : MCSession) {
+    init(scene : GameScene) {
         self.scene = scene
-        self.session = session
     }
     
     
     // NETWORK
-    func requestSpawn() {
-        if self.session.connectedPeers.count <= 0 {
+    
+    func send(json: JSON, dataMode: GKMatchSendDataMode) {
+        if !GameKitHelper.sharedInstance._matchStarted || GameKitHelper.sharedInstance._match == nil {
             return
         }
-        //print("Request spawn")
-        let json : JSON = ["type": "SPAWN", "name": self.scene.playerName]
         do {
-            try self.session.sendData(json.rawData(), toPeers: self.session.connectedPeers,
-                withMode: MCSessionSendDataMode.Reliable)
+            try GameKitHelper.sharedInstance._match?.sendData(json.rawData(), toPlayers: [GameKitHelper.sharedInstance._serverPlayer!], dataMode: dataMode)
         } catch let e as NSError {
-            // Do something
-            print("Something wrong")
             print(e)
         }
+
+    }
+
+    func requestSpawn() {
+        let json : JSON = ["type": "SPAWN", "name": self.scene.playerName]
+        send(json, dataMode: .Reliable)
     }
     
     func requestMove(position : CGPoint) {
-        if self.session.connectedPeers.count <= 0 {
-            return
-        }
         let json : JSON = ["type" : "MOVE", "x" : Double(position.x), "y": Double(position.y)]
-        do {
-            try self.session.sendData(json.rawData(), toPeers: self.session.connectedPeers, withMode: MCSessionSendDataMode.Unreliable)
-        } catch let e as NSError {
-            print(e)
-        }
+        send(json, dataMode: .Unreliable)
     }
     
     func requestSplit() {
-        if self.session.connectedPeers.count <= 0 {
-            return
-        }
         let json : JSON = ["type" : "SPLIT"]
-        do {
-            try self.session.sendData(json.rawData(), toPeers: self.session.connectedPeers, withMode: MCSessionSendDataMode.Reliable)
-        } catch let e as NSError {
-            print(e)
-        }
+        send(json, dataMode: .Reliable)
     }
     
     func requestFloating() {
-        if self.session.connectedPeers.count <= 0 {
-            return
-        }
         let json : JSON = ["type" : "FLOATING"]
-        do {
-            try self.session.sendData(json.rawData(), toPeers: self.session.connectedPeers, withMode: MCSessionSendDataMode.Unreliable)
-        } catch let e as NSError {
-            print(e)
-        }
+        send(json, dataMode: .Unreliable)
     }
     
     func updateScene() {
@@ -80,7 +59,7 @@ class ClientSessionDelegate : NSObject, MCSessionDelegate {
                     let nm = subjson["name"].stringValue
                     newids.insert(nm)
                     if !foodSet.contains(nm) {
-                        let fd = Food(foodColor: UIColor(hex: subjson["color"].intValue))
+                        let fd = Food(foodColor: randomColor())
                         fd.name = nm
                         fd.position.x = CGFloat(subjson["x"].double!)
                         fd.position.y = CGFloat(subjson["y"].double!)
@@ -193,21 +172,9 @@ class ClientSessionDelegate : NSObject, MCSessionDelegate {
         }
     }
     
-    func session(session: MCSession, didStartReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, withProgress progress: NSProgress) {
-        
-    }
-    
-    func session(session: MCSession, didFinishReceivingResourceWithName resourceName: String, fromPeer peerID: MCPeerID, atURL localURL: NSURL, withError error: NSError?) {
-        
-    }
-    
-    func session(session: MCSession, didReceiveCertificate certificate: [AnyObject]?, fromPeer peerID: MCPeerID, certificateHandler: (Bool) -> Void) {
-        certificateHandler(true)
-    }
-    
-    func session(session: MCSession, didReceiveData data: NSData, fromPeer peerID: MCPeerID) {
+    func receiveData(data: NSData, fromPlayer player: GKPlayer) {
         let json = JSON(data: data)
-        //print("Got something in client: ", json)
+        // print("Got something in client: ", json)
         if json["type"].stringValue == "SPAWN" {
             print("Got feedback: ", json["ID"].stringValue)
             if json["ID"].stringValue != "" {
@@ -216,23 +183,6 @@ class ClientSessionDelegate : NSObject, MCSessionDelegate {
         }
         if json["type"].stringValue == "BROADCAST" {
             newestBroadcast = json
-        }
-    }
-    
-    func session(session: MCSession, didReceiveStream stream: NSInputStream, withName streamName: String, fromPeer peerID: MCPeerID) {
-    }
-    
-    func session(session: MCSession, peer peerID: MCPeerID, didChangeState state: MCSessionState) {
-        if state == MCSessionState.Connected {
-        } else if state == MCSessionState.NotConnected {
-            print("Connection to server is broken");
-            dispatch_async(dispatch_get_main_queue(), {
-                let alert = UIAlertController(title: "Error", message: "Connection to the server is broken", preferredStyle: UIAlertControllerStyle.Alert)
-                alert.addAction(UIAlertAction(title: "Quit Game", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
-                    self.scene.abortGame()
-                }))
-                self.scene.parentView.presentViewController(alert, animated: true, completion: nil)
-            })
         }
     }
 }

@@ -31,6 +31,6 @@ extension UIColor {
         let g = Float(255.0 * rgb[1])
         let b = Float(255.0 * rgb[2])
     
-        return NSString.init(format: "#%02lX%02lX%02lX", lroundf(r), lroundf(g), lroundf(b))
+        return NSString.init(format: "%02lX%02lX%02lX", lroundf(r), lroundf(g), lroundf(b))
     }
 }
